@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tourism Multi-Agent System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    #container {
+      width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+      background: #0078ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fcc;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 10px;
+      background: #eef;
+      border-radius: 5px;
+      min-height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h2>Tourism Multi-Agent System</h2>
+    <p>Ask anything like:</p>
+    <ul>
+      <li>"I'm visiting Bangalore, show weather & places"</li>
+      <li>"Weather in Mumbai"</li>
+      <li>"Tourist places in Goa"</li>
+    </ul>
+
+    <textarea id="input" placeholder="Type your query here..."></textarea>
+    <button onclick="sendRequest()">Submit</button>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    async function sendRequest() {
+      const query = document.getElementById("input").value;
+      const output = document.getElementById("output");
+      output.innerHTML = "Loading...";
+
+      try {
+        const res = await fetch("http://localhost:8000/plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input: query })
+        });
+
+        const data = await res.json();
+        
+        if (!res.ok) {
+          output.innerHTML = data.detail;
+          return;
+        }
+
+        output.innerHTML = "<strong>Response:</strong><br><br>" + data.message;
+      }
+      catch (err) {
+        output.innerHTML = "Server unreachable. Make sure FastAPI is running.";
+      }
+    }
+  </script>
+</body>
+</html>
