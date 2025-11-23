@@ -68,12 +68,15 @@
       output.innerHTML = "Loading...";
 
       try {
-        const res = await fetch("https://your-render-app-name.onrender.com/plan",
- {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ input: query })
-        });
+        const res = await fetch(`https://your-render-url.onrender.com/plan?input=${encodeURIComponent(query)}`)
+    .then(res => res.json())
+    .then(data => {
+        output.innerHTML = data.message || JSON.stringify(data);
+    })
+    .catch(() => {
+        output.innerHTML = "Server unreachable.";
+    });
+
 
         const data = await res.json();
         
