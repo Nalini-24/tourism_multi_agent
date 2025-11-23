@@ -68,7 +68,8 @@
       output.innerHTML = "Loading...";
 
       try {
-        const res = await fetch("http://localhost:8000/plan", {
+        const res = await fetch("https://your-render-app-name.onrender.com/plan",
+ {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ input: query })
