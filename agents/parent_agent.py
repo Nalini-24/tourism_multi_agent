@@ -1,8 +1,8 @@
 # agents/parent_agent.py
 import requests
 from typing import Optional, Tuple
-import spacy
-nlp = spacy.load("en_core_web_sm")
+
+
 
 from .weather_agent import get_weather
 from .places_agent import find_places
@@ -13,22 +13,23 @@ HEADERS = {"User-Agent": "tourism-agent/1.0"}
 # ------------------------------------------------------------
 # IMPROVED PLACE EXTRACTOR (accurate and simple)
 # ------------------------------------------------------------
-def extract_place(user_text: str) -> Optional[str]:
-    """
-    Uses spaCy Named Entity Recognition to extract a city/country/location.
-    Returns the first detected GPE (Geo-Political Entity).
-    """
+import re
 
-    doc = nlp(user_text)
+def extract_place(text: str):
+    # 1. Try multi-word place names (New York, Los Angeles)
+    multi = re.findall(r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\b", text)
+    if multi:
+        return multi[0]
 
-    for ent in doc.ents:
-        if ent.label_ in ["GPE", "LOC"]:
-            return ent.text
+    # 2. Try single capitalized words (Goa, Delhi)
+    single = re.findall(r"\b([A-Z][a-z]+)\b", text)
+    ignore = {"I", "The", "In", "At", "And", "Weather", "Temperature", "Places",
+              "Visit", "Trip", "Show", "See", "What", "When", "How", "A", "An",
+              "Is", "Are", "You", "Me", "My"}
 
-    # If spaCy fails, fallback to capitalized words
-    fallback_tokens = [t for t in user_text.split() if t[0].isupper()]
-    if fallback_tokens:
-        return fallback_tokens[0]
+    for s in single:
+        if s not in ignore:
+            return s
 
     return None
 
